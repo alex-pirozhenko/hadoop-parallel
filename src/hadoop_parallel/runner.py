@@ -4,6 +4,7 @@ import hadoopy
 from functools import partial
 from joblib import Parallel
 import logging
+import sys
 from mapreduce import _get_location
 logging.basicConfig(level=logging.DEBUG)
 
@@ -38,7 +39,8 @@ class HadoopParallel(object):
             in_name=self.hdfs_input,
             out_name=self.hdfs_output,
             script_path=_get_location() + '/mapreduce.py',
-            files=self.files
+            files=self.files,
+            python_cmd=sys.executable
         )
         return [cPickle.loads(_[1]) for _ in sorted(out['output'], key=lambda _: _[0])]
 
