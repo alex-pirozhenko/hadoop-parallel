@@ -35,7 +35,7 @@ class HadoopParallel(object):
         hadoopy.mkdir(self.hdfs_wd)
         hadoopy.writetb(self.hdfs_input, enumerate(prepared_calls))
         logging.debug("Launching the job...")
-        out = hadoopy.launch_frozen(
+        out = hadoopy.launch(
             in_name=self.hdfs_input,
             out_name=self.hdfs_output,
             script_path=_get_location() + '/mapreduce.py',
