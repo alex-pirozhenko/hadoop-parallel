@@ -40,7 +40,6 @@ class HadoopParallel(object):
             script_path=_get_location() + '/mapreduce.py',
             files=self.files
         )
-        hadoopy.
         return [cPickle.loads(_[1]) for _ in sorted(out['output'], key=lambda _: _[0])]
 
     def _prepare_calls(self, calls):
