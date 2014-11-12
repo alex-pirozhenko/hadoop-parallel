@@ -31,6 +31,7 @@ class HadoopParallel(object):
         logging.debug("Preparing and pickling callables...")
         prepared_calls = self._prepare_calls(delayed_calls)
         logging.debug("Dumping callables to " + self.hdfs_input + "...")
+        hadoopy.mkdir(self.hdfs_input)
         hadoopy.writetb(self.hdfs_input, enumerate(prepared_calls))
         logging.debug("Launching the job...")
         out = hadoopy.launch_frozen(
