@@ -1,1 +1,1 @@
-mrjob>=0.4.2
+git+https://github.com/Yelp/mrjob.git#egg=mrjob
