@@ -7,6 +7,9 @@ class MRRunner(mrjob.job.MRJob):
     OUTPUT_PROTOCOL = mrjob.protocol.PickleProtocol
     INTERNAL_PROTOCOL = mrjob.protocol.PickleProtocol
 
+    def mapper(self, key, value):
+        yield key, value
+
     def reducer(self, _, values):
         for call in values:
             for res in call():
