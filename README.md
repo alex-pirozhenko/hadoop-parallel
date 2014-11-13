@@ -1,7 +1,7 @@
 hadoop-parallel
 ===============
 
-Scratchpad for Hadoopy-based parallelization
+Scratchpad for MR-based parallelization
 
 
-IMPORTANT: Hadoopy needs HADOOP_HOME env var defined.
+IMPORTANT: MRJob needs HADOOP_HOME env var defined.
