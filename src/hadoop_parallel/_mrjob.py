@@ -1,5 +1,9 @@
 import mrjob.job
 import mrjob.protocol
+import logging
+import sys
+
+logging.basicConfig(level=logging.DEBUG, stream=sys.stderr)
 
 
 class MRRunner(mrjob.job.MRJob):

@@ -2,6 +2,7 @@ import tempfile
 from functools import partial
 from joblib import Parallel, delayed
 import logging
+import sys
 from _mrjob import MRRunner
 import os
 
@@ -37,26 +38,31 @@ class HadoopParallel(object):
         log.debug("Preparing callables...")
         prepared_calls = self._prepare_calls(delayed_calls)
         log.debug('Dumping callables..')
-        os.makedirs(self.local_wd)
-        with open(self.local_input, 'w') as out:
-            protocol = MRRunner.INPUT_PROTOCOL()
-            for k, v in enumerate(prepared_calls):
-                print >>out, protocol.write(k % self.n_jobs, v)
+        try:
+            os.makedirs(self.local_wd)
+            with open(self.local_input, 'w') as out:
+                protocol = MRRunner.INPUT_PROTOCOL()
+                for k, v in enumerate(prepared_calls):
+                    print >>out, protocol.write(k % self.n_jobs, v)
 
-        log.debug("Preparing to run...")
-        job = MRRunner(args=[
-            self.local_input,
-            '-r', self.runner,
-            '--jobconf', 'mapred.reduce.tasks=%s' % self.n_jobs,
-            '--hdfs-scratch-dir', '/tmp'
-        ])
-        with job.make_runner() as runner:
-            log.debug("Running job...")
-            runner.run()
-            log.debug("Collecting results...")
-            result = sorted(((k, v) for k, v in map(job.parse_output_line, runner.stream_output())), key=lambda _: _[0])
-            log.debug("Cleaning up")
-            return [_[1] for _ in result]
+            log.debug("Preparing to run...")
+            job = MRRunner(args=[
+                self.local_input,
+                '-r', self.runner,
+                '--jobconf', 'mapred.reduce.tasks=%s' % self.n_jobs,
+                '--hdfs-scratch-dir', '/tmp',
+                '--interpreter', sys.executable,
+            ])
+            with job.make_runner() as runner:
+                log.debug("Running job...")
+                runner.run()
+                log.debug("Collecting results...")
+                result = sorted(((k, v) for k, v in map(job.parse_output_line, runner.stream_output())), key=lambda _: _[0])
+                log.debug("Cleaning up")
+                return [_[1] for _ in result]
+        finally:
+            os.remove(self.local_input)
+            os.removedirs(self.local_wd)
 
     def _prepare_calls(self, calls):
         workers = [[] for _ in range(self.n_jobs)]
