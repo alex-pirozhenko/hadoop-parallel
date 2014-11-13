@@ -44,7 +44,12 @@ class HadoopParallel(object):
                 print >>out, protocol.write(k % self.n_jobs, v)
 
         log.debug("Preparing to run...")
-        job = MRRunner(args=[self.local_input, '-r', self.runner, '--jobconf', 'mapred.reduce.tasks=%s' % self.n_jobs])
+        job = MRRunner(args=[
+            self.local_input,
+            '-r', self.runner,
+            '--jobconf', 'mapred.reduce.tasks=%s' % self.n_jobs,
+            '--hdfs-scratch-dir', '/tmp'
+        ])
         with job.make_runner() as runner:
             log.debug("Running job...")
             runner.run()
